@@ -1,0 +1,35 @@
+﻿@model Quiz
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    <h1 class="display-4">@Model.Title</h1>
+    <div>
+        <form method="post">
+            @{
+                foreach(var question in Model.Questions)
+                {
+                    <p>@question.Text</p>
+                    foreach(var answer in question.Answers)
+                    {
+                        <label>
+                            @answer.Text
+                            <input type="radio" name="answerText" value="@answer.Text"/>
+                        </label>
+                    }
+                }
+            }
+            <button type="submit">Отправить ответ</button>
+        </form>
+    </div>
+    <h2 class="display-4">Создание тестового квиза</h2>
+    <div>
+        <form asp-controller="Home" asp-action="CreateTestQuizInDatabase" method="post">
+            <button type="submit">
+                Сохранить тестовый квиз
+            </button>
+        </form>
+    </div>
+    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>

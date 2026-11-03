@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build
+bin/
+obj/
+
+# Local configuration
+appsettings.Development.json
+appsettings.Local.json
+
+# Local databases
+*.db
+*.db-shm
+*.db-wal
