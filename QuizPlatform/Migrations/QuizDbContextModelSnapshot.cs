@@ -21,7 +21,7 @@ namespace QuizPlatform.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Quiz.Models.Answer", b =>
+            modelBuilder.Entity("QuizPlatform.Models.Answer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -49,7 +49,86 @@ namespace QuizPlatform.Migrations
                     b.ToTable("Answers");
                 });
 
-            modelBuilder.Entity("Quiz.Models.Question", b =>
+            modelBuilder.Entity("QuizPlatform.Models.GameRoom", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("CurrentQuestionIndex")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuizId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("QuizId");
+
+                    b.ToTable("GameRooms");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Player", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("GameRoomId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameRoomId");
+
+                    b.ToTable("Players");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.PlayerAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnswerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PlayerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("PlayerId", "QuestionId")
+                        .IsUnique();
+
+                    b.ToTable("PlayerAnswers");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Question", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -71,7 +150,7 @@ namespace QuizPlatform.Migrations
                     b.ToTable("Questions");
                 });
 
-            modelBuilder.Entity("Quiz.Models.Quiz", b =>
+            modelBuilder.Entity("QuizPlatform.Models.Quiz", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -88,30 +167,85 @@ namespace QuizPlatform.Migrations
                     b.ToTable("Quizzes");
                 });
 
-            modelBuilder.Entity("Quiz.Models.Answer", b =>
+            modelBuilder.Entity("QuizPlatform.Models.Answer", b =>
                 {
-                    b.HasOne("Quiz.Models.Question", null)
+                    b.HasOne("QuizPlatform.Models.Question", null)
                         .WithMany("Answers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Quiz.Models.Question", b =>
+            modelBuilder.Entity("QuizPlatform.Models.GameRoom", b =>
                 {
-                    b.HasOne("Quiz.Models.Quiz", null)
+                    b.HasOne("QuizPlatform.Models.Quiz", "Quiz")
+                        .WithMany()
+                        .HasForeignKey("QuizId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Quiz");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Player", b =>
+                {
+                    b.HasOne("QuizPlatform.Models.GameRoom", null)
+                        .WithMany("Players")
+                        .HasForeignKey("GameRoomId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.PlayerAnswer", b =>
+                {
+                    b.HasOne("QuizPlatform.Models.Answer", "Answer")
+                        .WithMany()
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QuizPlatform.Models.Player", null)
+                        .WithMany("Answers")
+                        .HasForeignKey("PlayerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("QuizPlatform.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("Question");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Question", b =>
+                {
+                    b.HasOne("QuizPlatform.Models.Quiz", null)
                         .WithMany("Questions")
                         .HasForeignKey("QuizId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Quiz.Models.Question", b =>
+            modelBuilder.Entity("QuizPlatform.Models.GameRoom", b =>
+                {
+                    b.Navigation("Players");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Player", b =>
                 {
                     b.Navigation("Answers");
                 });
 
-            modelBuilder.Entity("Quiz.Models.Quiz", b =>
+            modelBuilder.Entity("QuizPlatform.Models.Question", b =>
+                {
+                    b.Navigation("Answers");
+                });
+
+            modelBuilder.Entity("QuizPlatform.Models.Quiz", b =>
                 {
                     b.Navigation("Questions");
                 });

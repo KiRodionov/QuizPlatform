@@ -8,20 +8,21 @@
             InProgress,
             Finished
         }
+        public int Id { get; private set; }
+        public int QuizId { get; private set; }
         public int CurrentQuestionIndex { get; private set; } = 0;
-        public string Code { get; private set; }
-        private List<Player> _players;
-
-        public Quiz Quiz { get; private set; }
-
+        public string Code { get; private set; } = null!;
+        public Quiz Quiz { get; private set; } = null!;
         public GameState Status { get; private set; }
+        private List<Player> _players = new List<Player>();
+        private GameRoom() { }
         public GameRoom(string code, Quiz quiz)
         {
             Code = code;
-            _players = new List<Player>();
             Quiz = quiz;
             Status = GameState.Waiting;
         }
+        public IReadOnlyList<Player> Players => _players;
 
         public IReadOnlyList<Player> GetPlayers() => _players;
 

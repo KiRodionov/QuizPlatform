@@ -2,15 +2,17 @@
 {
     public class Player
     {
+        public int GameRoomId { get; private set; }
         public string Name { get; private set; }
-        public int ID { get; private set; }
+        public int Id { get; private set; }
         private List<PlayerAnswer> _answers;
-        public Player(string name, int id) //ID Нужно создавать при заходе на сайт, пока оставил тут как заглушку
+        public Player(string name)
         {
             Name = name;
-            ID = id;
             _answers = new List<PlayerAnswer>();
         }
+        public IReadOnlyList<PlayerAnswer> Answers => _answers;
+        public IReadOnlyList<PlayerAnswer> GetAnswers() => _answers;
         public PlayerAnswer? FindAnswer(Question question)
         {
             var playerAnswer = _answers.FirstOrDefault(item => item?.Question == question, null);
@@ -30,7 +32,7 @@
             }
         }
 
-        public IReadOnlyList<PlayerAnswer> GetAnswers() => _answers;
+        
         public void ChangeName(string name)
         {
             if (!string.IsNullOrWhiteSpace(name)) Name = name;

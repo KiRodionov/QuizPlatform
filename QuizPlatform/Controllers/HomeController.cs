@@ -1,3 +1,4 @@
+using AspNetCoreGeneratedDocument;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using QuizPlatform.Data;
@@ -38,10 +39,14 @@ namespace QuizPlatform.Controllers
         public async Task<IActionResult> Index(string answerText)
         {
             var quiz = await _context.Quizzes
-                                   .Include(quiz => quiz.Questions)
-                                   .ThenInclude(question => question.Answers)
-                                   .SingleOrDefaultAsync(quiz => quiz.Id == 1);
-            if (quiz == null) return NotFound();
+                        .Include(quiz => quiz.Questions)
+                        .ThenInclude(question => question.Answers)
+                        .SingleOrDefaultAsync(quiz => quiz.Id == 1);
+            var player = await _context.Players
+                        .Include(p => p.Answers)
+                        .SingleOrDefaultAsync(p => p.Id == 1);
+
+            if (quiz == null || player == null) return NotFound();
 
             var question = quiz.Questions.FirstOrDefault();
             if (question == null) return Content("Вопроса не найдено");
@@ -49,9 +54,10 @@ namespace QuizPlatform.Controllers
             var selectedAnswer = question.Answers.FirstOrDefault(a => a.Text == answerText);
             if(selectedAnswer == null) return Content("Ответа не найдено");
 
-            Player player = new Player("John", 123);
             player.EnterAnswer(question, selectedAnswer);
             var playerAnswer = player.FindAnswer(question);
+
+            await _context.SaveChangesAsync();
 
             if (playerAnswer == null) return Content("Ответ игрока не найден");
 
@@ -66,7 +72,25 @@ namespace QuizPlatform.Controllers
             await _context.SaveChangesAsync();
             return Content("Квиз сохранён");
         }
+        [HttpPost]
+        public async Task<IActionResult> CreateTestGameRoomInDataBase()
+        {
+            var quiz = await _context.Quizzes
+                .Include(quiz => quiz.Questions)
+                .ThenInclude(question => question.Answers)
+                .FirstOrDefaultAsync(quiz => quiz.Id == 1);
 
+            if (quiz == null) return NotFound();
+
+            var player = CreatePlayer("John");
+            var gameRoom = CreateGameRoom(quiz);
+
+            gameRoom.AddPlayer(player);
+            _context.GameRooms.Add(gameRoom);
+            await _context.SaveChangesAsync();
+
+            return Content("Комната создана");
+        }
         public IActionResult Privacy()
         {
             return View();
@@ -86,6 +110,16 @@ namespace QuizPlatform.Controllers
             quest1.AddAnswer(new Answer("Круглая", true));
             quest1.AddAnswer(new Answer("Плоская", false));
             return quiz;
+        }
+
+        private GameRoom CreateGameRoom(Quiz quiz)
+        {
+            return new GameRoom("#1234", quiz);
+        }
+
+        private Player CreatePlayer(string name)
+        {
+            return new Player(name);
         }
     }
 }
