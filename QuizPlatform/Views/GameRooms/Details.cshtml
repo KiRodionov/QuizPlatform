@@ -1,0 +1,21 @@
+﻿@model GameRoomDetailsViewModel
+
+<h1 class="display-4">Моя комната</h1>
+<h2 class="display-5">Квиз - @Model.GameRoom.Quiz.Title</h2>
+<p>ID комнаты:@Model.GameRoom.Id</p>
+<p>Код комнаты:@Model.GameRoom.Code</p>
+
+<div>
+     @if (Model.CurrentPlayer == null)
+     {
+        <form asp-controller="GameRooms" asp-action="Join" method="post" asp-route-id="@Model.GameRoom.Id">
+           <p>Введите имя</p>
+           <input type="text" name="playerName" placeholder="User" />
+           <button type="submit"> Присоединиться</button>
+        </form>
+     }
+     else
+     {
+        <p>Привет, @Model.CurrentPlayer.Name!</p>
+     }
+</div>

@@ -4,11 +4,13 @@
     {
         public int GameRoomId { get; private set; }
         public string Name { get; private set; }
+        public string? AccessToken { get; private set;}
         public int Id { get; private set; }
         private List<PlayerAnswer> _answers;
-        public Player(string name)
+        public Player(string name, string accessToken)
         {
             Name = name;
+            AccessToken = accessToken;
             _answers = new List<PlayerAnswer>();
         }
         public IReadOnlyList<PlayerAnswer> Answers => _answers;

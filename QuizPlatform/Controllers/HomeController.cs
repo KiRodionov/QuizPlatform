@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using QuizPlatform.Data;
 using QuizPlatform.Models;
 using System.Diagnostics;
+using System.Security.Cryptography;
 
 namespace QuizPlatform.Controllers
 {
@@ -119,7 +120,8 @@ namespace QuizPlatform.Controllers
 
         private Player CreatePlayer(string name)
         {
-            return new Player(name);
+            string token = RandomNumberGenerator.GetHexString(64, false);
+            return new Player(name, token);
         }
     }
 }

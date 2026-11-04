@@ -85,6 +85,9 @@ namespace QuizPlatform.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("AccessToken")
+                        .HasColumnType("text");
+
                     b.Property<int>("GameRoomId")
                         .HasColumnType("integer");
 
